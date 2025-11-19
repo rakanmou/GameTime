@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace GameTime.ViewModels
+namespace GameTime.ViewModels.User
 {
-    public class UserRegistrationVM
+    public class RegistrationVM
     {
         [Required(ErrorMessage = "هذا الحقل مطلوب")]
         [StringLength(20, ErrorMessage = "يجب ألا يتجاوز إسم المستخدم 20 حرف")]
@@ -12,15 +12,21 @@ namespace GameTime.ViewModels
         public required string UserName { get; set; }
 
         [Required(ErrorMessage = "هذا الحقل مطلوب")]
-        [StringLength(20, ErrorMessage = "يجب ألا يتجاوز البريد الإلكتروني 20 حرف")]
+        [StringLength(60, ErrorMessage = "يجب ألا يتجاوز البريد الإلكتروني 60 حرف")]
         [EmailAddress(ErrorMessage = "الرجاء إدخال بريد إلكتروني صالح")]
         [Display(Name = "البريد الإلكتروني")]
         public required string Email { get; set; }
 
         [Required(ErrorMessage = "هذا الحقل مطلوب")]
-        [StringLength(100, MinimumLength = 8, ErrorMessage = "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل")]
+        [StringLength(20, MinimumLength = 8, ErrorMessage = "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل")]
         [DataType(DataType.Password)]
         [DisplayName("كلمة المرور")]
         public required string Password { get; set; }
+
+        [Required(ErrorMessage = "هذا الحقل مطلوب")]
+        [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "كلمة المرور غير متطابقة.")]
+        [Display(Name = "تأكيد كلمة المرور")]
+        public required string ConfirmPassword { get; set; }
     }
 }

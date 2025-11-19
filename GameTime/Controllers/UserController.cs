@@ -1,6 +1,11 @@
 ﻿using GameTime.Services;
-using GameTime.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using GameTime.ViewModels.User;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace GameTime.Controllers
 {
@@ -25,14 +30,95 @@ namespace GameTime.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(UserRegistrationVM user)
+        public async Task<IActionResult> Register(RegistrationVM user)
         {
             if (ModelState.IsValid)
             {
+                if (await _userServices.EmailExistsInRegistration(user.Email))
+                {
+                    ModelState.AddModelError("Email", ".البريد الالكتروني مستخدم من قبل");
+                    return View(user);
+                }
+
+                if (await _userServices.UserNameExistsInRegistration(user.UserName))
+                {
+                    ModelState.AddModelError("UserName", ".اسم المستخدم مستخدم من قبل");
+                    return View(user);
+                }
+
                 await _userServices.AddUser(user);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Home");
             }
             return View(user);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Login()
+        {
+            var user = HttpContext.User;
+
+            if (user?.Identity?.IsAuthenticated == true)
+            {
+                var role = user.FindFirst(ClaimTypes.Role)?.Value;
+
+                if (role == "User") 
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+
+            }
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginVM userlogin)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return View(userlogin);
+
+                var user = await _userServices.AuthenticateUser(userlogin.UserName, userlogin.Password);
+
+                if (user == null)
+                {
+                    ViewData["ErrorMessage"] = "اسم المستخدم او كلمة المرور غير صحيحة";
+                    return View(userlogin);
+                }
+
+                // Create Claims
+                var Claims = new List<Claim>()
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.UserName.ToString()),
+                    new Claim(ClaimTypes.Role, user.role.ToString())
+                };
+
+                var identity = new ClaimsIdentity(Claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal,
+                    new AuthenticationProperties { IsPersistent = userlogin.RememberMe });
+
+                return RedirectToAction("Index", "Home"); // Redirect to home after login
+            }
+
+            catch 
+            {
+                ViewData["ErrorMessage"] = "اسم المستخدم او كلمة المرور غير صحيحة";
+                return View(userlogin);
+            }
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LogOut()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login", "User");
         }
     }
 }

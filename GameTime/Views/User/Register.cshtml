@@ -1,4 +1,5 @@
-﻿@model GameTime.ViewModels.UserRegistrationVM
+﻿@model GameTime.ViewModels.User.RegistrationVM
+
 
 <div class="min-h-screen flex items-center justify-center bg-gray-100 py-10">
     <div class="w-full max-w-md bg-white shadow-lg rounded-xl p-6">
@@ -24,11 +25,80 @@
             </div>
 
             <!-- Password -->
-            <div>
+            <div class="relative mb-4">
                 <label asp-for="Password" class="block text-gray-700 font-medium mb-1"></label>
-                <input asp-for="Password" type="password"
-                       class="w-full p-3 border rounded-lg focus:ring focus:outline-none" />
+
+                <input id="passwordField"
+                       asp-for="Password"
+                       type="password"
+                       class="w-full p-3 pr-12 border rounded-lg focus:ring focus:outline-none" />
+
+                <!-- Toggle visibility button -->
+                <button type="button"
+                        onclick="togglePassword('passwordField', 'eyeIcon1', 'eyeOffIcon1')"
+                        class="absolute inset-y-0 right-3 flex items-center text-gray-500">
+
+                    <!-- Eye -->
+                    <svg id="eyeIcon1" xmlns="http://www.w3.org/2000/svg"
+                         class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943
+                     9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+
+                    <!-- Eye Off -->
+                    <svg id="eyeOffIcon1" xmlns="http://www.w3.org/2000/svg"
+                         class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7
+                     a10.05 10.05 0 013.52-4.586M6.53 6.53A9.969 9.969 0 0112 5
+                     c4.477 0 8.268 2.943 9.542 7a9.971 9.971 0 01-4.913 5.712M6.53 6.53L3 3
+                     m3.53 3.53l3.272 3.272m0 0a3 3 0 104.243 4.243m-4.243-4.243L21 21" />
+                    </svg>
+                </button>
+
                 <span asp-validation-for="Password" class="text-red-600 text-sm"></span>
+            </div>
+
+
+            <!-- Confirm Password -->
+            <div class="relative mb-4">
+                <label asp-for="ConfirmPassword" class="block text-gray-700 font-medium mb-1"></label>
+
+                <input id="confirmPasswordField"
+                       asp-for="ConfirmPassword"
+                       type="password"
+                       class="w-full p-3 pr-12 border rounded-lg focus:ring focus:outline-none" />
+
+                <!-- Toggle visibility button -->
+                <button type="button"
+                        onclick="togglePassword('confirmPasswordField', 'eyeIcon2', 'eyeOffIcon2')"
+                        class="absolute inset-y-0 right-3 flex items-center text-gray-500">
+
+                    <!-- Eye -->
+                    <svg id="eyeIcon2" xmlns="http://www.w3.org/2000/svg"
+                         class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943
+                     9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+
+                    <!-- Eye Off -->
+                    <svg id="eyeOffIcon2" xmlns="http://www.w3.org/2000/svg"
+                         class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7
+                     a10.05 10.05 0 013.52-4.586M6.53 6.53A9.969 9.969 0 0112 5
+                     c4.477 0 8.268 2.943 9.542 7a9.971 9.971 0 01-4.913 5.712M6.53 6.53L3 3
+                     m3.53 3.53l3.272 3.272m0 0a3 3 0 104.243 4.243m-4.243-4.243L21 21" />
+                    </svg>
+                </button>
+
+                <span asp-validation-for="ConfirmPassword" class="text-red-600 text-sm"></span>
             </div>
 
             <!-- Submit -->
@@ -43,4 +113,21 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        function togglePassword(inputId, eyeId, eyeOffId) {
+            const input = document.getElementById(inputId);
+            const eyeIcon = document.getElementById(eyeId);
+            const eyeOffIcon = document.getElementById(eyeOffId);
+
+            if (input.type === "password") {
+                input.type = "text";
+                eyeIcon.classList.add("hidden");
+                eyeOffIcon.classList.remove("hidden");
+            } else {
+                input.type = "password";
+                eyeIcon.classList.remove("hidden");
+                eyeOffIcon.classList.add("hidden");
+            }
+        }
+    </script>
 }

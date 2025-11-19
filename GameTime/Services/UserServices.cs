@@ -1,5 +1,5 @@
 ﻿using GameTime.Models;
-using GameTime.ViewModels;
+using GameTime.ViewModels.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameTime.Services
@@ -10,7 +10,8 @@ namespace GameTime.Services
 
         public UserServices (GameTimeDbContext Context) {  _context = Context; }
 
-        public async Task AddUser(UserRegistrationVM model)
+        
+        public async Task AddUser(RegistrationVM model)
         {
             
 
@@ -26,6 +27,22 @@ namespace GameTime.Services
 
             _context.tblUsers.Add(user);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> EmailExistsInRegistration(string email)
+        {
+            return await _context.tblUsers.AnyAsync(u => u.Email == email);
+        }
+
+        public async Task<bool> UserNameExistsInRegistration(string username)
+        {
+            return await _context.tblUsers.AnyAsync(u => u.UserName == username);
+        }
+
+        public async Task<tblUsers?> AuthenticateUser(string username, string password)
+        {
+            var user = await _context.tblUsers.FirstOrDefaultAsync(u => u.UserName == username && u.Password == password);
+            return user;
         }
     }
 }

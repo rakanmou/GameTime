@@ -1,5 +1,6 @@
 using GameTime.Models;
 using GameTime.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<UserServices>();
+
+// Cookie Authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/User/Login";     
+        options.LogoutPath = "/User/Logout";
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.AccessDeniedPath = "/User/AccessDenied";
+    });
+
 
 //For Connection To  Data Base
 builder.Services.AddDbContext<GameTimeDbContext>(options =>
@@ -26,7 +38,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

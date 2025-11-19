@@ -3,50 +3,75 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - GameTime</title>
 
+    <title>@ViewData["Title"] - GameTime</title>
+    
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GameTime.styles.css" asp-append-version="true" />
 
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">GameTime</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-        
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - GameTime - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <!-- TOP NAVBAR -->
+    <nav class="bg-gray-800 border-b border-gray-700 px-8 py-4 flex items-center justify-between">
+
+        <!-- Logo -->
+        <div class="flex items-center space-x-3">
+            <h1 class="text-2xl font-bold text-blue-400">GameTime</h1>
         </div>
+
+        <!-- Center Menu -->
+        <div class="hidden md:flex space-x-8 text-gray-300 font-medium">
+            <a href="/Home/Index" class="hover:text-blue-400 transition">Dashboard</a>
+            <a href="/Games" class="hover:text-blue-400 transition">My Games</a>
+            <a href="/Categories" class="hover:text-blue-400 transition">Categories</a>
+            <a href="/Profile" class="hover:text-blue-400 transition">Profile</a>
+        </div>
+
+        <!-- Right: Login / User -->
+        <div class="flex items-center space-x-4">
+
+            @if (User?.Identity?.IsAuthenticated == true)
+            {
+                <span class="text-gray-300">
+                    Logged in as: <strong>@User.Identity.Name</strong>
+                </span>
+
+                <form asp-controller="User" asp-action="Logout" method="post">
+                    <button type="submit"
+                            class="bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 transition">
+                        Logout
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a href="/User/Login" class="hover:text-blue-400 transition">Login</a>
+            }
+        </div>
+
+    </nav>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="container mx-auto mt-8 px-6 pb-20">
+        @RenderBody()
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-800 py-4 text-center text-gray-400 border-t border-gray-700">
+        © @DateTime.Now.Year GameTime. All rights reserved.
     </footer>
+
+
+           <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
+
+
 </body>
 </html>
