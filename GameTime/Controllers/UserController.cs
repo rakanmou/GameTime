@@ -47,7 +47,7 @@ namespace GameTime.Controllers
                 }
 
                 await _userServices.AddUser(user);
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Login", "User");
             }
             return View(user);
         }
@@ -72,15 +72,11 @@ namespace GameTime.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginVM userlogin)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                    return View(userlogin);
-
                 var user = await _userServices.AuthenticateUser(userlogin.UserName, userlogin.Password);
 
                 if (user == null)
@@ -89,7 +85,7 @@ namespace GameTime.Controllers
                     return View(userlogin);
                 }
 
-                // Create Claims
+                // Create Claims after user is authenticated and able to login
                 var Claims = new List<Claim>()
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -103,15 +99,10 @@ namespace GameTime.Controllers
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal,
                     new AuthenticationProperties { IsPersistent = userlogin.RememberMe });
 
-                return RedirectToAction("Index", "Home"); // Redirect to home after login
+                return RedirectToAction("Index", "Home");
             }
 
-            catch 
-            {
-                ViewData["ErrorMessage"] = "اسم المستخدم او كلمة المرور غير صحيحة";
-                return View(userlogin);
-            }
-
+            return View(userlogin);
         }
 
         [HttpPost]
@@ -120,5 +111,6 @@ namespace GameTime.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "User");
         }
+
     }
 }

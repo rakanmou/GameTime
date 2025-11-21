@@ -44,5 +44,6 @@ namespace GameTime.Services
             var user = await _context.tblUsers.FirstOrDefaultAsync(u => u.UserName == username && u.Password == password);
             return user;
         }
+
     }
 }
